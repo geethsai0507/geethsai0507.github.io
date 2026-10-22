@@ -208,9 +208,10 @@ html[data-theme="light"] .hero-grid{background-image:linear-gradient(rgba(0,110,
 #boot-skip:focus-visible{outline:2px solid #00E5FF;outline-offset:2px;}
 #boot-skip-hint{position:absolute;left:4rem;bottom:3.4rem;font-size:.62rem;letter-spacing:.14em;color:#8BA3B8;opacity:.6;}
 
-/* Hero content (shown after boot) */
-#hero-content{position:relative;z-index:2;opacity:0;transition:opacity .8s ease;}
+/* Hero content (shown after boot) — main column + stats column, no overlap */
+#hero-content{position:relative;z-index:2;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;gap:3rem;}
 #hero-content.visible{opacity:1;}
+.hero-main{flex:1;min-width:0;}
 .hero-eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-bottom:2rem;display:flex;align-items:center;gap:.8rem;}
 .hero-eyebrow::before{content:'►';font-size:.55rem;}
 .hero-name{font-family:var(--exo);font-weight:900;font-size:clamp(3.4rem,10vw,9rem);line-height:.9;letter-spacing:-.01em;color:var(--white);margin-bottom:.5rem;}
@@ -243,12 +244,12 @@ html[data-theme="light"] .btn-outline{border-color:rgba(0,110,138,.45);}
 .btn-ghost{color:var(--text);border:1px solid var(--rim);background:transparent;}
 .btn-ghost:hover{border-color:var(--text);color:var(--white);}
 
-/* Hero stats sidebar */
-.hero-stats{position:absolute;right:3rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:0;z-index:2;border:1px solid rgba(0,229,255,.12);background:rgba(15,26,46,.8);backdrop-filter:blur(8px);}
+/* Hero stats — its own column (wide screens), strip (laptops), grid (phones) */
+.hero-stats{flex-shrink:0;display:flex;flex-direction:column;z-index:2;border:1px solid rgba(0,229,255,.12);background:rgba(15,26,46,.8);backdrop-filter:blur(8px);}
 html[data-theme="light"] .hero-stats{background:rgba(255,255,255,.85);border-color:rgba(0,110,138,.2);}
-.hstat{padding:1.2rem 1.5rem;border-bottom:1px solid rgba(0,229,255,.08);position:relative;}
-html[data-theme="light"] .hstat{border-bottom-color:rgba(0,110,138,.12);}
-.hstat:last-child{border-bottom:none;}
+.hstat{padding:1.2rem 1.5rem;position:relative;border:0 solid rgba(0,229,255,.08);border-bottom-width:1px;}
+html[data-theme="light"] .hstat{border-color:rgba(0,110,138,.12);}
+.hstat:last-child{border-bottom-width:0;}
 .hstat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cyan);transform:scaleY(0);transition:transform .3s;transform-origin:bottom;}
 .hstat:hover::before{transform:scaleY(1);}
 .hstat-num{font-family:var(--exo);font-weight:900;font-size:2.2rem;color:var(--white);line-height:1;}
@@ -645,10 +646,19 @@ html[data-theme="light"] .buddy-bubble{box-shadow:0 8px 24px rgba(14,31,46,.12);
 
 /* ── RESPONSIVE ── */
 @media(min-width:901px){.mobile-menu{display:none!important;}}
+
+/* Laptops: hero stats become a horizontal strip under the buttons */
+@media(max-width:1280px){
+  #hero-content{flex-direction:column;align-items:stretch;gap:0;}
+  .hero-stats{flex-direction:row;align-self:flex-start;}
+  .hstat{border-bottom-width:0;border-right-width:1px;}
+  .hstat:last-child{border-right-width:0;}
+}
+
 @media(max-width:900px){
   nav{padding:1rem 1.5rem;} .nav-links,.nav-cv{display:none;}
   .nav-burger{display:flex;}
-  #hero{padding:5rem 1.5rem 4rem;} .hero-stats{display:none;}
+  #hero{padding:5rem 1.5rem 4rem;}
   #boot-screen{padding:3rem 1.5rem;}
   #boot-skip{right:1.5rem;bottom:2rem;}
   #boot-skip-hint{display:none;}
@@ -667,6 +677,16 @@ html[data-theme="light"] .buddy-bubble{box-shadow:0 8px 24px rgba(14,31,46,.12);
   .foot-main{flex-direction:column;gap:.7rem;text-align:center;}
   .foot-ai{padding:.85rem 1.5rem;}
 }
+
+/* Phones: hero stats as a 2x2 grid */
+@media(max-width:600px){
+  .hero-stats{display:grid;grid-template-columns:1fr 1fr;align-self:stretch;}
+  .hstat{padding:1rem 1.2rem;border-right-width:1px;border-bottom-width:1px;}
+  .hstat:nth-child(2n){border-right-width:0;}
+  .hstat:nth-last-child(-n+2){border-bottom-width:0;}
+  .hstat-num{font-size:1.8rem;}
+}
+
 @media(max-width:520px){
   .logo .ver{display:none;}
   .nav-hire{display:none;}
@@ -740,28 +760,30 @@ html[data-theme="light"] .buddy-bubble{box-shadow:0 8px 24px rgba(14,31,46,.12);
 
   <!-- Hero content — shown after boot -->
   <div id="hero-content">
-    <div class="hero-eyebrow">PLAYER ONE — HYDERABAD, INDIA — 2026</div>
-    <div class="hero-title-row">
-      <div class="hero-title-col">
-        <div class="hero-name" aria-hidden="true"><span class="cyan">&lt;</span>GEETHSAI<span class="cyan">/&gt;</span></div>
-        <h1 class="hero-fullname">Geeth Sai Vulise</h1>
-        <div class="hero-subtitle">AI Engineer · <em>Department Gold Medalist</em> · Backend &amp; Cloud Developer</div>
+    <div class="hero-main">
+      <div class="hero-eyebrow">PLAYER ONE — HYDERABAD, INDIA — 2026</div>
+      <div class="hero-title-row">
+        <div class="hero-title-col">
+          <div class="hero-name" aria-hidden="true"><span class="cyan">&lt;</span>GEETHSAI<span class="cyan">/&gt;</span></div>
+          <h1 class="hero-fullname">Geeth Sai Vulise</h1>
+          <div class="hero-subtitle">AI Engineer · <em>Department Gold Medalist</em> · Backend &amp; Cloud Developer</div>
+        </div>
+        <div class="hero-dev" aria-hidden="true">
+          <div class="pixel-slot"></div>
+          <div class="hero-dev-shadow"></div>
+          <div class="hero-dev-tag">// dev_unit.spawn()</div>
+        </div>
       </div>
-      <div class="hero-dev" aria-hidden="true">
-        <div class="pixel-slot"></div>
-        <div class="hero-dev-shadow"></div>
-        <div class="hero-dev-tag">// dev_unit.spawn()</div>
+      <div class="hero-bars">
+        <div class="hbar"><span class="hbar-label">HP</span><div class="hbar-track"><div class="hbar-fill cyan" style="width:92%"></div></div><span class="hbar-val">92/100</span></div>
+        <div class="hbar"><span class="hbar-label">MP</span><div class="hbar-track"><div class="hbar-fill violet" style="width:88%"></div></div><span class="hbar-val">88/100</span></div>
+        <div class="hbar"><span class="hbar-label">XP</span><div class="hbar-track"><div class="hbar-fill gold" style="width:75%"></div></div><span class="hbar-val">7500/10K</span></div>
       </div>
-    </div>
-    <div class="hero-bars">
-      <div class="hbar"><span class="hbar-label">HP</span><div class="hbar-track"><div class="hbar-fill cyan" style="width:92%"></div></div><span class="hbar-val">92/100</span></div>
-      <div class="hbar"><span class="hbar-label">MP</span><div class="hbar-track"><div class="hbar-fill violet" style="width:88%"></div></div><span class="hbar-val">88/100</span></div>
-      <div class="hbar"><span class="hbar-label">XP</span><div class="hbar-track"><div class="hbar-fill gold" style="width:75%"></div></div><span class="hbar-val">7500/10K</span></div>
-    </div>
-    <div class="hero-actions">
-      <a href="#projects" class="btn btn-cyan">▶ View Missions</a>
-      <a href="#terminal-section" class="btn btn-outline">⌨ Open Terminal</a>
-      <a href="https://drive.google.com/file/d/1d-yAGseYgRSnVd4yKIqVtyPS55NW3U-O/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">↓ Resume</a>
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-cyan">▶ View Missions</a>
+        <a href="#terminal-section" class="btn btn-outline">⌨ Open Terminal</a>
+        <a href="https://drive.google.com/file/d/1d-yAGseYgRSnVd4yKIqVtyPS55NW3U-O/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">↓ Resume</a>
+      </div>
     </div>
     <div class="hero-stats">
       <div class="hstat"><div class="hstat-num">8<span>.72</span></div><div class="hstat-lbl">CGPA · Dept. Highest</div></div>
@@ -970,7 +992,7 @@ html[data-theme="light"] .buddy-bubble{box-shadow:0 8px 24px rgba(14,31,46,.12);
           <li>Shipped as open source (MIT) with releases up to <strong>v1.2.0</strong>: show verification &amp; email accuracy fixes.</li>
         </ul>
         <div class="mc-tags"><span class="mc-tech">JavaScript</span><span class="mc-tech">Chrome APIs</span><span class="mc-tech">Notifications</span><span class="mc-tech">Email APIs</span></div>
-        <div class="mc-btns"><a href="https://github.com/geethsai0507/BookMyShow-ALert" target="_blank" rel="noopener noreferrer" class="mc-btn-gh"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.410-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>GitHub ↗</a></div>
+        <div class="mc-btns"><a href="https://github.com/geethsai0507/BookMyShow-ALert" target="_blank" rel="noopener noreferrer" class="mc-btn-gh"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>GitHub ↗</a></div>
       </div>
       <div class="mission-card">
         <div class="mc-num">02</div>
